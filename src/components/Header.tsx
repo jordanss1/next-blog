@@ -1,5 +1,5 @@
 import React from 'react';
-import { assets } from '../../public/assets';
+import { assets } from '../app/assets/assets';
 
 const Header: React.FC = () => {
   return (

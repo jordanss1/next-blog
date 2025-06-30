@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { blog_data } from '../../public/assets';
+import { blog_data } from '../app/assets/assets';
 import BlogItem from './BlogItem';
 
 type MenuType = 'All' | 'Technology' | 'Startup' | 'Lifestyle';
