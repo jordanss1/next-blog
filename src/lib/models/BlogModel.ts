@@ -32,8 +32,8 @@ const Schema = new mongoose.Schema({
   },
 });
 
-const BlogModel = mongoose.models.BlogModel || mongoose.model('blog', Schema);
+const BlogModel = mongoose.models['blog'] || mongoose.model('blog', Schema);
 
-export type BlogModelType = InferSchemaType<typeof Schema>;
+export type BlogType = InferSchemaType<typeof Schema>;
 
 export default BlogModel;

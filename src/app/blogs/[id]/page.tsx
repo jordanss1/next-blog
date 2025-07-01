@@ -1,6 +1,8 @@
 'use client';
 import { assets, blog_data, BlogDataType } from '@/app/assets/assets';
+import blog_pic_1 from '@/app/assets/blog_pic_1.png';
 import Footer from '@/components/Footer';
+import axios from 'axios';
 import Link from 'next/link';
 import React, { use, useEffect, useState } from 'react';
 

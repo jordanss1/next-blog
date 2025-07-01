@@ -21,8 +21,8 @@ services:
           action: sync
     restart: unless-stopped
     environment:
-        MONGODB_ADMINUSERNAME: ${MONGODB_ADMINUSERNAME}
-        MONGODB_ADMINPASSWORD: ${MONGODB_ADMINPASSWORD}
+        MONGODB_USERNAME: ${MONGODB_USERNAME}
+        MONGODB_PASSWORD: ${MONGODB_PASSWORD}
         MONGODB_URI: ${MONGODB_URI}
 
   db:
