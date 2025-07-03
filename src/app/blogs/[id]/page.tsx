@@ -1,10 +1,11 @@
 'use client';
-import { assets, blog_data, BlogDataType } from '@/app/assets/assets';
-import blog_pic_1 from '@/app/assets/blog_pic_1.png';
+import { assets, BlogDataType } from '@/app/assets/assets';
 import Footer from '@/components/Footer';
 import axios from 'axios';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { use, useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 type PageProps = {
   params: Promise<{
@@ -13,22 +14,25 @@ type PageProps = {
 };
 
 const page: React.FC<PageProps> = ({ params }) => {
-  const [data, setData] = useState<BlogDataType | null>(null);
+  const [blog, setBlog] = useState<BlogDataType | null>(null);
+  const router = useRouter();
   const { id } = use(params);
 
-  const fetchBlogData = () => {
-    setData(blog_data.find((blog) => blog.id === +id) ?? null);
+  const fetchBlogData = async () => {
+    try {
+      const { data } = await axios.get(`/api/blog?_id=${id}`);
+      setBlog(data[0]);
+    } catch (err) {
+      toast.error('Could not retrieve blog');
+      router.push('/');
+    }
   };
 
   useEffect(() => {
     fetchBlogData();
   }, []);
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
-  return data ? (
+  return blog ? (
     <>
       <div className="bg-gray-200 py-5 px-5 md:px-12 lg:px-28">
         <div className="flex justify-between items-center ">
@@ -46,29 +50,29 @@ const page: React.FC<PageProps> = ({ params }) => {
         </div>
         <div className="text-center my-24">
           <h1 className="text-2xl sm:text-5xl font-bold max-w-[700px] mx-auto">
-            {data?.title}
+            {blog?.title}
           </h1>
           <img
-            src={data.author_img.src}
+            src={`/${blog.authorImg}`}
             width={60}
             height={60}
             className="mx-auto mt-6 border border-white rounded-full"
           />
           <span className="mt-1 pb-2 text-lg max-w-[740px] mx-auto">
-            {data.author}
+            {blog.author}
           </span>
         </div>
       </div>
       <div className="mx-5 max-w-[800px] md:mx-auto -mt-24 mb-10">
         <img
-          src={data.image.src}
+          src={`/blog_pic_1.png`}
           width={1280}
           height={720}
           className="border-4 border-white"
           alt=""
         />
         <h1 className="my-8 text-[26px] font-bold">Introduction</h1>
-        <p className="">{data.description}</p>
+        <p className="">{blog.description}</p>
         <h3 className="my-5 text-[18px] font-bold">Some Text</h3>
         <p className="my-3">
           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloremque

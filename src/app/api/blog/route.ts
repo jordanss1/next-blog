@@ -1,10 +1,9 @@
 import { ConnectDB } from '@/lib/config/db';
 import BlogModel, { BlogType } from '@/lib/models/BlogModel';
 import { writeFile } from 'fs/promises';
-import { StaticImageData } from 'next/image';
 import { NextRequest, NextResponse } from 'next/server';
-import writeToLog from '../utils/writeToLog';
 import path from 'path';
+import writeToLog from '../utils/writeToLog';
 
 export const LoadDB = async () => {
   await ConnectDB();
@@ -13,7 +12,25 @@ export const LoadDB = async () => {
 export const GET = async (req: NextRequest) => {
   await LoadDB();
 
-  return NextResponse.json({ msg: 'API working' });
+  const _id = req.nextUrl.searchParams.get('_id');
+
+  try {
+    const query = _id ? { _id } : {};
+
+    const blogs = await BlogModel.find<BlogType>(query);
+
+    return NextResponse.json(blogs);
+  } catch (err) {
+    let logError = JSON.stringify(err);
+
+    if (err instanceof Error) {
+      logError = `${err.stack} ${err.message}`;
+    }
+
+    writeToLog(logError, true);
+
+    return NextResponse.json('Failed to find blogs', { status: 500 });
+  }
 };
 
 export const POST = async (req: NextRequest) => {
@@ -26,7 +43,10 @@ export const POST = async (req: NextRequest) => {
 
   const imageBytes = await image?.arrayBuffer();
   const buffer = Buffer.from(imageBytes);
-  const filePath = path.join(process.cwd(), `/public/${timeStamp}_${image.name}`)
+  const filePath = path.join(
+    process.cwd(),
+    `/public/${timeStamp}_${image.name}`
+  );
 
   await writeFile(filePath, buffer);
   const imgUrl = `${timeStamp}_${image.name}`;
@@ -38,7 +58,7 @@ export const POST = async (req: NextRequest) => {
     category: `${formData.get('category')}`,
     author: `${formData.get('author')}`,
     image: imgUrl,
-    authorImg: `${formData.get('authorImg')}`,
+    authorImg: 'author_img.png',
   };
 
   try {

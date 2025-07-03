@@ -1,16 +1,25 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  experimental: { webpackMemoryOptimizations: true },
-  webpack: (
-    config,
-    { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }
-  ) => {
-    if (config.cache) {
-      config.cache = Object.freeze({
-        type: 'memory',
-      });
+  reactStrictMode: false,
+  productionBrowserSourceMaps: false,
+
+  experimental: {
+    webpackMemoryOptimizations: true,
+    preloadEntriesOnStart: false,
+  },
+
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.devtool = 'cheap-module-source-map';
+
+      if (config.cache) {
+        config.cache = {
+          type: 'memory',
+        };
+      }
     }
+
     return config;
   },
 };

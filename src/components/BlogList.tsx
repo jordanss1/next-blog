@@ -1,11 +1,28 @@
-import React, { useState } from 'react';
-import { blog_data } from '../app/assets/assets';
+import { BlogDataType } from '@/app/assets/assets';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import BlogItem from './BlogItem';
 
-type MenuType = 'All' | 'Technology' | 'Startup' | 'Lifestyle';
+type MenuType = 'all' | 'technology' | 'startup' | 'lifestyle';
 
 const BlogList = () => {
-  const [menu, setMenu] = useState<MenuType>('All');
+  const [menu, setMenu] = useState<MenuType>('all');
+  const [blogs, setBlogs] = useState<BlogDataType[] | null>(null);
+
+  const getBlogs = async (): Promise<void> => {
+    try {
+      const { data } = await axios.get(`/api/blog`);
+
+      setBlogs(data);
+    } catch (err) {
+      toast.error('Could not retrieve user blogs');
+    }
+  };
+
+  useEffect(() => {
+    getBlogs();
+  }, []);
 
   const returnButtonClass = (clickedMenu: MenuType) =>
     `transition-all duration-200 py-1 px-4 rounded-sm ${
@@ -18,35 +35,37 @@ const BlogList = () => {
     <div>
       <div className="flex justify-center gap-6 my-10">
         <button
-          onClick={() => setMenu('All')}
-          className={returnButtonClass('All')}
+          onClick={() => setMenu('all')}
+          className={returnButtonClass('all')}
         >
           All
         </button>
         <button
-          onClick={() => setMenu('Technology')}
-          className={returnButtonClass('Technology')}
+          onClick={() => setMenu('technology')}
+          className={returnButtonClass('technology')}
         >
           Technology
         </button>
         <button
-          onClick={() => setMenu('Startup')}
-          className={returnButtonClass('Startup')}
+          onClick={() => setMenu('startup')}
+          className={returnButtonClass('startup')}
         >
           Startup
         </button>
         <button
-          onClick={() => setMenu('Lifestyle')}
-          className={returnButtonClass('Lifestyle')}
+          onClick={() => setMenu('lifestyle')}
+          className={returnButtonClass('lifestyle')}
         >
           Lifestyle
         </button>
       </div>
       <div className="flex flex-wrap justify-around gap-1 gap-y-10 mb-16 xl:mx-24">
-        {blog_data
-          .filter(({ category }) => (menu === 'All' ? true : category === menu))
+        {blogs
+          ?.filter(({ category }) =>
+            menu === 'all' ? true : category === menu
+          )
           .map((blog) => (
-            <BlogItem key={blog.id} {...blog} />
+            <BlogItem key={blog._id} {...blog} />
           ))}
       </div>
     </div>
