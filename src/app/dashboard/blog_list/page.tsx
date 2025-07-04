@@ -1,29 +1,27 @@
-'use client';
-import { BlogDataType } from '@/app/assets/assets';
-import BlogItem from '@/components/BlogItem';
-import BlogTableItem from '@/components/dashboard/BlogTableItem';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import DashBlogList from '@/components/dashboard/DashBlogList';
+import { BlogDataType, FetchResponse } from '@/types';
+import React from 'react';
 
-const page = () => {
-  const [blogs, setBlogs] = useState<BlogDataType[] | null>(null);
+const page = async () => {
+  let error: null | string = null;
+  let blogs: BlogDataType[] | null = null;
 
-  const getBlogs = async (): Promise<void> => {
-    try {
-      const { data } = await axios.get(`/api/blog`);
+  const res = await fetch('http://web1:3000/api/blog', {
+    next: { tags: ['blogs'] } as any,
+  });
 
-      console.log(data);
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    error = data.error || 'Could not fetch blogs';
+  } else {
+    const data = (await res.json()) as FetchResponse<BlogDataType[]>;
 
-      setBlogs(data);
-    } catch (err) {
-      toast.error('Could not retrieve blogs');
+    if ('error' in data) {
+      error = data.error;
+    } else {
+      blogs = data.blogs;
     }
-  };
-
-  useEffect(() => {
-    getBlogs();
-  }, []);
+  }
 
   return (
     <div className="flex-1 pt-5 px-5 sm:pt-12 sm:pl-13">
@@ -47,9 +45,7 @@ const page = () => {
             </tr>
           </thead>
           <tbody>
-            {blogs?.map((blog) => (
-              <BlogTableItem key={blog._id} {...blog} />
-            ))}
+            <DashBlogList data={blogs} error={error} />
           </tbody>
         </table>
       </div>

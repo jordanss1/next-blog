@@ -5,8 +5,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
-    depends_on: 
+    depends_on:
       - db
+    container_name: web1
 
     develop:
       watch:
@@ -21,9 +22,9 @@ services:
           action: sync
     restart: unless-stopped
     environment:
-        MONGODB_USERNAME: ${MONGODB_USERNAME}
-        MONGODB_PASSWORD: ${MONGODB_PASSWORD}
-        MONGODB_URI: ${MONGODB_URI}
+      MONGODB_USERNAME: ${MONGODB_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_URI: ${MONGODB_URI}
 
   db:
     image: mongo:8.0.10-noble
@@ -31,14 +32,13 @@ services:
       - 27017:27017
     container_name: db1
     restart: unless-stopped
-    env_file: 
+    env_file:
       - .env
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     volumes:
       - blogs:/data/db
-      
+
 volumes:
   blogs:
-

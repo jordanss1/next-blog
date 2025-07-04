@@ -41,13 +41,4 @@ export const assets = {
   upload_area,
 };
 
-export type BlogDataType = {
-  _id: number;
-  title: string;
-  description: string;
-  image: string;
-  date: number;
-  category: string;
-  author: string;
-  authorImg: string;
-};
+

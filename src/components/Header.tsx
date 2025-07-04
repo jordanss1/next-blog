@@ -1,7 +1,33 @@
-import React from 'react';
+'use client';
+import axios from 'axios';
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import { assets } from '../app/assets/assets';
 
 const Header: React.FC = () => {
+  const [email, setEmail] = useState<string>('');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (email) {
+      const formData = new FormData();
+      formData.append('email', email);
+
+      try {
+        const { status } = await axios.post('/api/email', formData);
+
+        setEmail('');
+
+        if (status === 200)
+          toast.success('Email address added', { style: { zIndex: 9999 } });
+        else toast.error('Email address not added');
+      } catch (err) {
+        toast.error('Email address not added');
+      }
+    }
+  };
+
   return (
     <div className="py-5 px-5 md:px-12 lg:px-28">
       <div className="flex justify-between items-center">
@@ -24,14 +50,16 @@ const Header: React.FC = () => {
           incidunt alias.{' '}
         </p>
         <form
-          action=""
+          onSubmit={(e) => handleSubmit(e)}
           className="flex justify-between max-w-[500px] scale-75 sm:scale-100 mx-auto mt-10 border border-black shadow-[-7px_7px_0px_black]"
         >
           <input
+            onChange={({ target }) => setEmail(target.value)}
+            value={email}
             type="email"
             placeholder="Enter your email"
             className="pl-4 outline-none"
-            name=""
+            name="email"
             id=""
           />
           <button
